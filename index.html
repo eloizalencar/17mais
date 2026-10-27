@@ -46,7 +46,6 @@
       position: relative;
     }
 
-    /* Partículas de Poeira Estelar */
     .star-field {
       position: fixed;
       top: 0;
@@ -172,7 +171,6 @@
       animation: bounce 2s infinite ease-in-out;
     }
 
-    /* FLASH DE LUZ DOURADA AO ABRIR */
     .golden-flash {
       position: fixed;
       top: 0;
@@ -207,17 +205,15 @@
       position: relative;
     }
 
-    /* Polaroid */
     .polaroid-frame {
       background: #FFFFFF;
-      padding: 12px 12px 28px 12px;
+      padding: 12px 12px 24px 12px;
       border-radius: 6px;
       box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(168,85,247,0.2);
       transform: rotate(-2deg);
       margin: 10px auto 26px auto;
       max-width: 270px;
       position: relative;
-      cursor: pointer;
       transition: transform 0.3s ease;
     }
 
@@ -254,18 +250,6 @@
       font-weight: 700;
       text-align: center;
       margin-top: 10px;
-    }
-
-    .change-photo-btn {
-      display: inline-block;
-      margin-top: 6px;
-      font-size: 0.72rem;
-      color: var(--primary-light);
-      background: rgba(168,85,247,0.15);
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px dashed var(--primary-light);
-      cursor: pointer;
     }
 
     .letter-body {
@@ -359,7 +343,6 @@
       text-transform: uppercase;
     }
 
-    /* Tabuleiro Sudoku */
     .sudoku-container {
       width: 100%;
       max-width: 380px;
@@ -438,7 +421,6 @@
       background: rgba(239, 68, 68, 0.25) !important;
     }
 
-    /* Teclado Numérico */
     .keypad {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -477,7 +459,6 @@
       font-size: 1rem;
     }
 
-    /* Painel de Ações */
     .actions-bar {
       display: flex;
       gap: 10px;
@@ -499,9 +480,9 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: all 0.2s ease;
     }
 
-    /* MODAL DE CHARADA */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -620,7 +601,6 @@
       margin-bottom: 24px;
     }
 
-    /* CAIXA DE DESTAQUE DO ANEL */
     .ring-box {
       background: linear-gradient(135deg, rgba(250, 204, 21, 0.12) 0%, rgba(168, 85, 247, 0.15) 100%);
       border: 1px solid var(--gold);
@@ -645,7 +625,6 @@
       font-style: italic;
     }
 
-    /* Canvas Confetes */
     #confetti-canvas {
       position: fixed;
       top: 0;
@@ -656,7 +635,6 @@
       z-index: 999;
     }
 
-    /* Animações */
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
@@ -703,12 +681,10 @@
               <stop offset="50%" stop-color="#D97706"/>
             </linearGradient>
           </defs>
-          <!-- Base do Baú -->
           <rect x="25" y="70" width="150" height="95" rx="14" fill="url(#chestWood)" stroke="#6B21A8" stroke-width="3"/>
           <path d="M 25 100 L 175 100 M 25 135 L 175 135" stroke="rgba(192,132,252,0.3)" stroke-width="2"/>
           <rect x="35" y="70" width="12" height="95" fill="url(#chestGold)"/>
           <rect x="153" y="70" width="12" height="95" fill="url(#chestGold)"/>
-          <!-- Tampa do Baú -->
           <g class="chest-lid" id="chest-lid">
             <path d="M 20 70 C 20 25, 180 25, 180 70 Z" fill="url(#chestWood)" stroke="#6B21A8" stroke-width="3"/>
             <path d="M 35 70 C 35 38, 50 34, 50 34" stroke="url(#chestGold)" stroke-width="12" fill="none"/>
@@ -728,15 +704,10 @@
     <section id="screen-intro">
       <div class="letter-card">
         
-        <!-- Polaroid com camilaelo.jpeg -->
-        <div class="polaroid-frame" onclick="triggerPhotoUpload()">
+        <div class="polaroid-frame">
           <div class="washi-tape"></div>
           <img id="polaroid-image" class="polaroid-img" src="camilaelo.jpeg" onerror="this.src='https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80'" alt="Eloiza e Camila">
           <div class="polaroid-caption">Eloiza & Camila • Almas Gêmeas 💜</div>
-          <center>
-            <span class="change-photo-btn">📷 Carregar / Ajustar foto</span>
-          </center>
-          <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="loadPhoto(event)">
         </div>
 
         <div class="letter-body">
@@ -774,7 +745,6 @@
         <div class="sudoku-grid" id="sudoku-grid"></div>
       </div>
 
-      <!-- Teclado Numérico Touch -->
       <div class="keypad">
         <button class="key-btn" onclick="pressKey(1)">1</button>
         <button class="key-btn" onclick="pressKey(2)">2</button>
@@ -789,8 +759,8 @@
       </div>
 
       <div class="actions-bar">
-        <button class="btn-secondary" onclick="giveHint()">
-          <span>💡</span> <span>Dica Lógica</span>
+        <button class="btn-secondary" id="btn-hint" onclick="giveHint()">
+          <span>💡</span> <span id="hint-text">Dica (3)</span>
         </button>
         <button class="btn-secondary" onclick="clearUserBoard()">
           <span>🔄</span> <span>Recomeçar</span>
@@ -847,9 +817,10 @@
   </div>
 
   <script>
-    /* ==========================================
-       DADOS DOS 5 NÍVEIS & CHARADAS SEGURAS
-       ========================================== */
+    const MAX_HINTS = 3;
+    let hintsRemaining = MAX_HINTS;
+
+    /* DADOS DOS 5 NÍVEIS & CHARADAS REFINADAS */
     const LEVELS = [
       {
         difficulty: "Fase 1 • Aquecimento Rápido",
@@ -929,7 +900,7 @@
           [0,9,2,0,6,8,0,3,0],
           [1,0,5,7,0,2,4,0,8]
         ],
-        riddle: "🗝️ <strong>Enigma da Cumplicidade:</strong> Entre duas irmãs que dividem o teto, até a fronteira de um espelho é respeitada... Procure no refúgio onde você só mexe com licença: sob o espelho e dentro do armário pessoal da Eloiza.",
+        riddle: "🔬 <strong>Enigma Óptico & Territorial:</strong> Em 1835, Justus von Liebig dominou o reflexo químico da prata sobre o vidro. Em nossa rotina diária existem dois santuários de espelho e vapor, mas este mistério não repousa onde você lava o rosto ao acordar. Ele aguarda no refúgio daquela que divide a vida com você — oculto atrás de uma portinha de armário que não é a sua.",
         targetKey: "CUMPLICIDADE"
       },
       {
@@ -988,9 +959,6 @@
       }
     ];
 
-    /* ==========================================
-       ESTADO DO JOGO
-       ========================================== */
     let currentLevel = 0;
     let currentBoard = [];
     let selectedCell = null;
@@ -999,8 +967,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initAudio();
-      loadSavedPhoto();
-      // Tecla 'E' para Cheat da Eloiza
       window.addEventListener('keydown', (e) => {
         if (e.key === 'e' || e.key === 'E') {
           solveCurrentSudokuByCheat();
@@ -1008,9 +974,6 @@
       });
     });
 
-    /* ==========================================
-       SÍNTESE DE ÁUDIO WEB
-       ========================================== */
     let audioCtx = null;
     function initAudio() {
       try {
@@ -1043,9 +1006,6 @@
       playNote(1046.50, 0.36, 0.6);
     }
 
-    /* ==========================================
-       TRANSIÇÕES DE TELA
-       ========================================== */
     function openChest() {
       const chestWrapper = document.getElementById('chest');
       const flash = document.getElementById('flash');
@@ -1071,17 +1031,34 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    /* ==========================================
-       MECÂNICA DO SUDOKU
-       ========================================== */
     function loadLevel(lvlIndex) {
       currentLevel = lvlIndex;
+      hintsRemaining = MAX_HINTS;
+      updateHintButton();
+
       const lvlData = LEVELS[lvlIndex];
       document.getElementById('level-indicator').innerText = `Nível ${lvlIndex + 1} de 5`;
       document.getElementById('level-difficulty').innerText = lvlData.difficulty;
 
       currentBoard = lvlData.initial.map(row => [...row]);
       renderBoard();
+    }
+
+    function updateHintButton() {
+      const hintBtn = document.getElementById('btn-hint');
+      const hintText = document.getElementById('hint-text');
+      if (hintText) {
+        hintText.innerText = `Dica (${hintsRemaining})`;
+      }
+      if (hintBtn) {
+        if (hintsRemaining <= 0) {
+          hintBtn.style.opacity = '0.45';
+          hintBtn.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+        } else {
+          hintBtn.style.opacity = '1';
+          hintBtn.style.borderColor = 'rgba(192, 132, 252, 0.3)';
+        }
+      }
     }
 
     function renderBoard() {
@@ -1147,11 +1124,18 @@
     }
 
     function giveHint() {
+      if (hintsRemaining <= 0) {
+        alert("Suas 3 dicas deste nível se esgotaram! Agora é com a sua mente investigadora 🧠✨");
+        return;
+      }
+
       const lvlData = LEVELS[currentLevel];
       for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 9; c++) {
           if (currentBoard[r][c] === 0) {
             currentBoard[r][c] = lvlData.solution[r][c];
+            hintsRemaining--;
+            updateHintButton();
             renderBoard();
             selectCell(r, c);
             playNote(600, 0, 0.15);
@@ -1186,9 +1170,6 @@
       document.getElementById('modal-riddle').style.display = 'flex';
     }
 
-    /* ==========================================
-       SUBMISSÃO DE SENHA & AVANÇO
-       ========================================== */
     function submitPassword() {
       const input = document.getElementById('input-password');
       const val = input.value.trim().toUpperCase();
@@ -1216,9 +1197,7 @@
       }
     }
 
-    /* ==========================================
-       CHEAT CODES DA ELOIZA
-       ========================================== */
+    /* CHEAT CODES DA ELOIZA */
     function solveCurrentSudokuByCheat() {
       const lvlData = LEVELS[currentLevel];
       currentBoard = lvlData.solution.map(row => [...row]);
@@ -1245,40 +1224,6 @@
       setTimeout(() => { giftTapCount = 0; }, 1200);
     }
 
-    /* ==========================================
-       CARREGAR FOTO
-       ========================================== */
-    function triggerPhotoUpload() {
-      document.getElementById('photo-input').click();
-    }
-
-    function loadPhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const imgUrl = e.target.result;
-          document.getElementById('polaroid-image').src = imgUrl;
-          try {
-            localStorage.setItem('camila_bday_photo', imgUrl);
-          } catch(err) {}
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function loadSavedPhoto() {
-      try {
-        const saved = localStorage.getItem('camila_bday_photo');
-        if (saved) {
-          document.getElementById('polaroid-image').src = saved;
-        }
-      } catch(e) {}
-    }
-
-    /* ==========================================
-       CONFETES
-       ========================================== */
     function triggerConfetti(count = 60) {
       const canvas = document.getElementById('confetti-canvas');
       const ctx = canvas.getContext('2d');
