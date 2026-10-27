@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Caça ao Tesouro Secreta • Camila</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #07020E;
+      --bg-card: rgba(23, 8, 43, 0.75);
+      --bg-card-border: rgba(192, 132, 252, 0.25);
+      --primary: #A855F7;
+      --primary-light: #C084FC;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --gold: #FACC15;
+      --gold-glow: rgba(250, 204, 21, 0.35);
+      --text: #F3E8FF;
+      --text-muted: #C4B5FD;
+      --cell-bg: rgba(255, 255, 255, 0.05);
+      --cell-fixed: #FFFFFF;
+      --cell-user: #E9D5FF;
+      --cell-border: rgba(192, 132, 252, 0.2);
+      --cell-thick: #A855F7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1E0836 0%, #0D031A 60%, var(--bg-deep) 100%);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Partículas de Poeira Estelar */
+    .star-field {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      background-image: 
+        radial-gradient(1px 1px at 20px 30px, #E9D5FF, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 100px 150px, #FACC15, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 220px 80px, #C084FC, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 300px 260px, #FFF, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 150px 320px, #E9D5FF, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 280px 420px, #FACC15, rgba(0,0,0,0));
+      background-size: 350px 450px;
+      opacity: 0.45;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* TELA 1: BAÚ DO TESOURO */
+    #screen-chest {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 90vh;
+      width: 100%;
+      animation: fadeIn 1s ease;
+    }
+
+    .chest-badge {
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid var(--primary-light);
+      color: var(--primary-light);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .chest-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+      text-shadow: 0 0 30px rgba(192, 132, 252, 0.6);
+    }
+
+    .chest-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+
+    .chest-wrapper {
+      position: relative;
+      cursor: pointer;
+      width: 200px;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .chest-wrapper:hover {
+      transform: scale(1.06);
+    }
+
+    .chest-glow {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, var(--gold) 0%, rgba(168, 85, 247, 0.3) 50%, transparent 70%);
+      filter: blur(25px);
+      opacity: 0.6;
+      animation: pulseGlow 2.5s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    .chest-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.7));
+    }
+
+    .chest-lid {
+      transform-origin: 100px 65px;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .chest-wrapper.open .chest-lid {
+      transform: translateY(-25px) rotateX(-50deg);
+    }
+
+    .chest-hint {
+      margin-top: 36px;
+      font-size: 0.85rem;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    /* FLASH DE LUZ DOURADA AO ABRIR */
+    .golden-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle, #FFF 0%, var(--gold) 40%, var(--primary) 80%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      transition: opacity 0.5s ease;
+    }
+
+    /* TELA 2: CARTA INICIAL & POLAROID */
+    #screen-intro {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      padding-bottom: 40px;
+    }
+
+    .letter-card {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 24px 20px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    /* Polaroid */
+    .polaroid-frame {
+      background: #FFFFFF;
+      padding: 12px 12px 28px 12px;
+      border-radius: 6px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(168,85,247,0.2);
+      transform: rotate(-2deg);
+      margin: 10px auto 26px auto;
+      max-width: 270px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .polaroid-frame:hover {
+      transform: rotate(0deg) scale(1.03);
+    }
+
+    .washi-tape {
+      position: absolute;
+      top: -12px;
+      left: 35%;
+      width: 80px;
+      height: 24px;
+      background: rgba(192, 132, 252, 0.65);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transform: rotate(3deg);
+      z-index: 2;
+    }
+
+    .polaroid-img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      border-radius: 4px;
+      background: #2D124D;
+      display: block;
+    }
+
+    .polaroid-caption {
+      color: #331A47;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .change-photo-btn {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: var(--primary-light);
+      background: rgba(168,85,247,0.15);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px dashed var(--primary-light);
+      cursor: pointer;
+    }
+
+    .letter-body {
+      color: #E2D9F3;
+      font-size: 0.96rem;
+      line-height: 1.68;
+      margin-bottom: 22px;
+      text-align: justify;
+    }
+
+    .letter-body p {
+      margin-bottom: 14px;
+    }
+
+    .rules-box {
+      background: rgba(168, 85, 247, 0.12);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 12px 12px 0;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .rules-box strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      padding: 16px 28px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 25px var(--primary-glow);
+      transition: all 0.2s ease;
+    }
+
+    .btn-main:active {
+      transform: scale(0.97);
+    }
+
+    /* TELA 3: SUDOKU DO ANIVERSÁRIO */
+    #screen-game {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: fadeIn 0.5s ease;
+      padding-bottom: 30px;
+    }
+
+    .game-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .level-badge {
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid var(--primary-light);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .difficulty-tag {
+      font-size: 0.75rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Tabuleiro Sudoku */
+    .sudoku-container {
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1;
+      background: rgba(15, 4, 29, 0.85);
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      padding: 6px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 25px var(--primary-glow);
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .sudoku-grid {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-right: 1px solid var(--cell-border);
+      border-bottom: 1px solid var(--cell-border);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.15s ease;
+    }
+
+    /* Linhas divisórias 3x3 mais grossas */
+    .cell:nth-child(3n) {
+      border-right: 2px solid var(--cell-thick);
+    }
+    .cell:nth-child(9n) {
+      border-right: none;
+    }
+    .cell:nth-child(n+19):nth-child(-n+27),
+    .cell:nth-child(n+46):nth-child(-n+54) {
+      border-bottom: 2px solid var(--cell-thick);
+    }
+    .cell:nth-child(n+73):nth-child(-n+81) {
+      border-bottom: none;
+    }
+
+    .cell.fixed {
+      color: var(--cell-fixed);
+      background: rgba(255, 255, 255, 0.04);
+      cursor: default;
+    }
+
+    .cell.user {
+      color: #F0ABFC;
+    }
+
+    .cell.selected {
+      background: rgba(192, 132, 252, 0.35) !important;
+      outline: 2px solid var(--gold);
+      outline-offset: -2px;
+      z-index: 2;
+    }
+
+    .cell.highlight {
+      background: rgba(168, 85, 247, 0.18);
+    }
+
+    .cell.error {
+      color: #F87171 !important;
+      background: rgba(239, 68, 68, 0.25) !important;
+    }
+
+    /* Teclado Numérico */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 380px;
+      margin-bottom: 14px;
+    }
+
+    .key-btn {
+      background: rgba(30, 10, 55, 0.8);
+      border: 1px solid rgba(192, 132, 252, 0.3);
+      color: #FFFFFF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.1s ease;
+    }
+
+    .key-btn:active {
+      transform: scale(0.92);
+      background: var(--primary);
+    }
+
+    .key-btn.erase {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #FCA5A5;
+      font-size: 1rem;
+    }
+
+    /* Painel de Ações */
+    .actions-bar {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(192, 132, 252, 0.3);
+      color: var(--text-muted);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* MODAL DE CHARADA & DESBLOQUEIO */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(5, 1, 10, 0.88);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #1A0730 0%, #100320 100%);
+      border: 1px solid var(--gold);
+      border-radius: 24px;
+      padding: 26px 20px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 0 50px var(--gold-glow);
+      position: relative;
+    }
+
+    .modal-icon {
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .riddle-box {
+      background: rgba(250, 204, 21, 0.08);
+      border: 1px dashed rgba(250, 204, 21, 0.4);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: left;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #FEF08A;
+    }
+
+    .input-key {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--primary-light);
+      border-radius: 14px;
+      padding: 14px;
+      color: #FFFFFF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      text-align: center;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      outline: none;
+    }
+
+    .input-key:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    /* TELA FINAL: O GRANDE TESOURO */
+    #screen-finale {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: fadeIn 1s ease;
+      padding-bottom: 50px;
+    }
+
+    .finale-badge {
+      background: rgba(250, 204, 21, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .finale-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.3rem;
+      color: #FFFFFF;
+      text-align: center;
+      margin-bottom: 24px;
+      text-shadow: 0 0 35px var(--gold-glow);
+    }
+
+    .finale-card {
+      background: var(--bg-card);
+      border: 1px solid var(--gold);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 24px 20px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 30px var(--gold-glow);
+      margin-bottom: 24px;
+    }
+
+    /* VIP VOUCHER CARD */
+    .voucher-card {
+      background: linear-gradient(135deg, #1C0A33 0%, #2A0845 50%, #4C1D95 100%);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 20px rgba(250, 204, 21, 0.2);
+      margin-bottom: 24px;
+    }
+
+    .voucher-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(250,204,21,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .voucher-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .voucher-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .voucher-chip {
+      width: 36px;
+      height: 26px;
+      background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
+      border-radius: 6px;
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .voucher-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+      text-shadow: 0 0 20px rgba(255,255,255,0.4);
+    }
+
+    .voucher-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .voucher-code-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px dashed rgba(250, 204, 21, 0.5);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .voucher-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .btn-copy {
+      background: var(--gold);
+      color: #331A47;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Canvas Confetes */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+      from { transform: scale(0.9); opacity: 0.4; }
+      to { transform: scale(1.15); opacity: 0.8; }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="star-field"></div>
+  <div class="golden-flash" id="flash"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="container">
+
+    <!-- TELA 1: BAÚ DO TESOURO -->
+    <section id="screen-chest">
+      <div class="chest-badge" id="secret-badge">17 de Dezembro • Aniversário</div>
+      <h1 class="chest-title">Para a Minha Camila</h1>
+      <p class="chest-subtitle">Um mistério especial foi trancado aqui dentro...</p>
+
+      <div class="chest-wrapper" id="chest" onclick="openChest()">
+        <div class="chest-glow"></div>
+        <svg class="chest-svg" viewBox="0 0 200 180">
+          <defs>
+            <linearGradient id="chestWood" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4A1E75"/>
+              <stop offset="50%" stop-color="#2D104E"/>
+              <stop offset="100%" stop-color="#19062E"/>
+            </linearGradient>
+            <linearGradient id="chestGold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FDE047"/>
+              <stop offset="100%" stop-color="#D97706"/>
+            </linearGradient>
+          </defs>
+          <!-- Base do Baú -->
+          <rect x="25" y="70" width="150" height="95" rx="14" fill="url(#chestWood)" stroke="#6B21A8" stroke-width="3"/>
+          <path d="M 25 100 L 175 100 M 25 135 L 175 135" stroke="rgba(192,132,252,0.3)" stroke-width="2"/>
+          <rect x="35" y="70" width="12" height="95" fill="url(#chestGold)"/>
+          <rect x="153" y="70" width="12" height="95" fill="url(#chestGold)"/>
+          <!-- Tampa do Baú -->
+          <g class="chest-lid" id="chest-lid">
+            <path d="M 20 70 C 20 25, 180 25, 180 70 Z" fill="url(#chestWood)" stroke="#6B21A8" stroke-width="3"/>
+            <path d="M 35 70 C 35 38, 50 34, 50 34" stroke="url(#chestGold)" stroke-width="12" fill="none"/>
+            <path d="M 165 70 C 165 38, 150 34, 150 34" stroke="url(#chestGold)" stroke-width="12" fill="none"/>
+            <rect x="85" y="55" width="30" height="32" rx="6" fill="url(#chestGold)" stroke="#92400E" stroke-width="2"/>
+            <circle cx="100" cy="70" r="4" fill="#1E0836"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="chest-hint">
+        <span>✨ Toque no baú para quebrar o feitiço ✨</span>
+      </div>
+    </section>
+
+    <!-- TELA 2: CARTA & POLAROID -->
+    <section id="screen-intro">
+      <div class="letter-card">
+        
+        <!-- Polaroid Personalizável -->
+        <div class="polaroid-frame" onclick="triggerPhotoUpload()">
+          <div class="washi-tape"></div>
+          <img id="polaroid-image" class="polaroid-img" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80" alt="Nós Duas">
+          <div class="polaroid-caption">Eloiza & Camila • Almas Gêmeas 💜</div>
+          <center>
+            <span class="change-photo-btn">📷 Carregar nossa foto</span>
+          </center>
+          <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="loadPhoto(event)">
+        </div>
+
+        <div class="letter-body">
+          <p><strong>Minha irmã de alma,</strong></p>
+          <p>Hoje é o seu dia, e você sabe que nada entre nós é comum ou sem intensidade. A gente convive tanto que completa a frase uma da outra, tem os mesmos pensamentos ao mesmo tempo e até as nossas briguinhas duram exatos cinco segundos antes da gente cair na risada de novo.</p>
+          <p>Morar junto, estudar junto, dividir a rotina, o cansaço e os sonhos. Eu amo que a gente não precisa dizer uma palavra: basta eu estar lendo e você com seu fone de ouvido deitada no meu quarto para a casa parecer completa.</p>
+          <p>Como você é movida por desafios, mistérios e lógica, os seus presentes não estão fáceis. Eles estão trancados sob <strong>5 enigmas de Sudoku</strong> espalhados pelo apartamento. Cada quebra-cabeça decifrado revelará uma charada que aponta para um esconderijo físico.</p>
+        </div>
+
+        <div class="rules-box">
+          <strong>Como Funciona a Missão:</strong>
+          1. Resolva o tabuleiro de Sudoku para abrir a charada.<br>
+          2. Encontre o pacote secreto no esconderijo decifrado.<br>
+          3. Digite no site a <strong>palavra-chave</strong> presa na tag do presente para destravar a fase seguinte.
+        </div>
+
+        <button class="btn-main" onclick="startGame()">
+          <span>Iniciar Caça ao Tesouro</span>
+          <span>➔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TELA 3: SUDOKU DO ANIVERSÁRIO -->
+    <section id="screen-game">
+      <div class="game-header">
+        <div class="level-badge" id="level-badge-btn" onclick="handleSecretTap()">
+          <span id="cheat-flower">🌸</span>
+          <span id="level-indicator">Nível 1 de 5</span>
+        </div>
+        <div class="difficulty-tag" id="level-difficulty">Aquecimento Suave</div>
+      </div>
+
+      <div class="sudoku-container">
+        <div class="sudoku-grid" id="sudoku-grid"></div>
+      </div>
+
+      <!-- Teclado Numérico Touch -->
+      <div class="keypad">
+        <button class="key-btn" onclick="pressKey(1)">1</button>
+        <button class="key-btn" onclick="pressKey(2)">2</button>
+        <button class="key-btn" onclick="pressKey(3)">3</button>
+        <button class="key-btn" onclick="pressKey(4)">4</button>
+        <button class="key-btn" onclick="pressKey(5)">5</button>
+        <button class="key-btn" onclick="pressKey(6)">6</button>
+        <button class="key-btn" onclick="pressKey(7)">7</button>
+        <button class="key-btn" onclick="pressKey(8)">8</button>
+        <button class="key-btn" onclick="pressKey(9)">9</button>
+        <button class="key-btn erase" onclick="pressKey(0)">⌫</button>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn-secondary" onclick="giveHint()">
+          <span>💡</span> <span>Dica Lógica</span>
+        </button>
+        <button class="btn-secondary" onclick="clearUserBoard()">
+          <span>🔄</span> <span>Recomeçar</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TELA FINAL: O GRANDE TESOURO -->
+    <section id="screen-finale">
+      <div class="finale-badge">Missão Cumprida</div>
+      <h1 class="finale-title">Feliz Aniversário!</h1>
+
+      <!-- VIP VOUCHER CARD -->
+      <div class="voucher-card">
+        <div class="voucher-top">
+          <div class="voucher-logo">GIFT CARD VIP • CAMILA</div>
+          <div class="voucher-chip"></div>
+        </div>
+        <div class="voucher-value">R$ 100,00</div>
+        <div class="voucher-desc">
+          Válido para encher o carrinho na <strong>SHEIN</strong> (ou onde o seu coração de arquiteta e musa quiser). O mimo oficial da sua irmãzinha!
+        </div>
+        <div class="voucher-code-box">
+          <span class="voucher-code" id="voucher-code">CAMILA-100-VIP-BDAY</span>
+          <button class="btn-copy" onclick="copyVoucher()">Copiar</button>
+        </div>
+      </div>
+
+      <div class="finale-card">
+        <div class="letter-body">
+          <p><strong>Minha eterna companheira de vida,</strong></p>
+          <p>Você encontrou cada pacote, desvendou cada pista e agora está com o tesouro final nas suas mãos (e sim, eu peguei a sua indireta do anel bem na hora 💍).</p>
+          <p>Obrigada por ser esse porto seguro, essa mulher brilhante que me apoia, que me ouve falar sem parar e que aceita ficar em silêncio no mesmo quarto só para uma sentir a presença da outra.</p>
+          <p>Que o seu novo ciclo seja tão grandioso, inteligente e doce quanto você. Eu te amo muito, para além de qualquer algoritmo ou equação!</p>
+          <p style="text-align: right; color: var(--gold); font-weight: 700; margin-top: 20px;">
+            Com todo o meu amor,<br>Eloiza 💜
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL: CHARADA DO ESCONDERIJO -->
+  <div class="modal-overlay" id="modal-riddle">
+    <div class="modal-content">
+      <div class="modal-icon" id="modal-gift-icon" onclick="handleGiftTap()">🎁</div>
+      <h2 class="modal-title" id="modal-title">Sudoku Vencido!</h2>
+      <div class="riddle-box" id="modal-riddle-text"></div>
+      
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">
+        Vá até o local, pegue o presente e digite a <strong>palavra-chave</strong> da tag:
+      </p>
+
+      <input type="text" class="input-key" id="input-password" placeholder="DIGITE A PALAVRA" autocomplete="off">
+      <button class="btn-main" onclick="submitPassword()">
+        <span>Destravar Próximo Nível</span>
+        <span>➔</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================
+       DADOS DOS 5 NÍVEIS & CHARADAS SEGURAS
+       ========================================== */
+    const LEVELS = [
+      {
+        difficulty: "Fase 1 • Aquecimento Rápido",
+        // Solução Completa Nível 1
+        solution: [
+          [5,3,4,6,7,8,9,1,2],
+          [6,7,2,1,9,5,3,4,8],
+          [1,9,8,3,4,2,5,6,7],
+          [8,5,9,7,6,1,4,2,3],
+          [4,2,6,8,5,3,7,9,1],
+          [7,1,3,9,2,4,8,5,6],
+          [9,6,1,5,3,7,2,8,4],
+          [2,8,7,4,1,9,6,3,5],
+          [3,4,5,2,8,6,1,7,9]
+        ],
+        // Tabuleiro Inicial (bastante preenchido)
+        initial: [
+          [5,3,0,0,7,0,0,0,0],
+          [6,0,0,1,9,5,0,0,0],
+          [0,9,8,0,0,0,0,6,0],
+          [8,0,0,0,6,0,0,0,3],
+          [4,0,0,8,0,3,0,0,1],
+          [7,0,0,0,2,0,0,0,6],
+          [0,6,0,0,0,0,2,8,0],
+          [0,0,0,4,1,9,0,0,5],
+          [0,0,0,0,8,0,0,7,9]
+        ],
+        riddle: "🔬 <strong>Enigma Físico-Químico:</strong> Descoberto por acidente em 1945 por Percy Spencer diante de um magnetron de radar militar... Neste local, ondas invisíveis de 2,45 GHz agitam as moléculas de água sem precisar de uma única faísca de fogo.",
+        targetKey: "MOLECULA"
+      },
+      {
+        difficulty: "Fase 2 • Desafio Fácil",
+        solution: [
+          [1,2,3,4,5,6,7,8,9],
+          [4,5,6,7,8,9,1,2,3],
+          [7,8,9,1,2,3,4,5,6],
+          [2,1,4,3,6,5,8,9,7],
+          [3,6,5,8,9,7,2,1,4],
+          [8,9,7,2,1,4,3,6,5],
+          [5,3,1,6,4,2,9,7,8],
+          [6,4,2,9,7,8,5,3,1],
+          [9,7,8,5,3,1,6,4,2]
+        ],
+        initial: [
+          [1,0,3,4,0,6,7,0,9],
+          [0,5,0,7,8,0,1,2,0],
+          [7,8,0,0,2,3,0,5,6],
+          [2,0,4,3,0,5,8,0,7],
+          [0,6,5,0,9,0,2,1,0],
+          [8,0,7,2,0,4,3,0,5],
+          [5,3,0,6,4,0,9,7,0],
+          [0,4,2,0,7,8,0,3,1],
+          [9,0,8,5,0,1,6,0,2]
+        ],
+        riddle: "🌀 <strong>Enigma Mecânico:</strong> Patenteada no início do século XX para poupar os braços do trabalho manual... Onde a força centrífuga desafia a inércia líquida, girando velozmente dentro de um tambor cilíndrico de aço perfurado.",
+        targetKey: "CENTRIFUGA"
+      },
+      {
+        difficulty: "Fase 3 • Raciocínio Moderado",
+        solution: [
+          [2,4,6,8,1,3,5,7,9],
+          [5,7,9,2,4,6,8,1,3],
+          [8,1,3,5,7,9,2,4,6],
+          [3,5,7,9,2,4,6,8,1],
+          [6,8,1,3,5,7,9,2,4],
+          [9,2,4,6,8,1,3,5,7],
+          [4,6,8,1,3,5,7,9,2],
+          [7,9,2,4,6,8,1,3,5],
+          [1,3,5,7,9,2,4,6,8]
+        ],
+        initial: [
+          [2,0,6,8,0,3,5,0,9],
+          [0,7,0,2,4,0,8,1,0],
+          [8,1,0,0,7,9,0,4,6],
+          [0,5,7,9,0,4,6,8,0],
+          [6,0,1,0,5,0,9,0,4],
+          [0,2,4,6,0,1,3,5,0],
+          [4,6,0,1,3,0,0,9,2],
+          [0,9,2,0,6,8,0,3,0],
+          [1,0,5,7,0,2,4,0,8]
+        ],
+        riddle: "🗝️ <strong>Enigma da Cumplicidade:</strong> Entre duas irmãs que dividem o teto, até a fronteira de um espelho é respeitada... Procure no refúgio onde você só mexe com licença: sob o espelho e dentro do armário pessoal da Eloiza.",
+        targetKey: "CUMPLICIDADE"
+      },
+      {
+        difficulty: "Fase 4 • Nível Avançado",
+        solution: [
+          [4,3,5,2,6,9,7,8,1],
+          [6,8,2,5,7,1,4,9,3],
+          [1,9,7,8,3,4,5,6,2],
+          [8,2,6,1,9,5,3,4,7],
+          [3,7,4,6,8,2,9,1,5],
+          [9,5,1,7,4,3,6,2,8],
+          [5,1,9,3,2,6,8,7,4],
+          [2,4,8,9,5,7,1,3,6],
+          [7,6,3,4,1,8,2,5,9]
+        ],
+        initial: [
+          [0,3,0,2,0,9,0,8,0],
+          [6,0,2,0,7,0,4,0,3],
+          [0,9,0,8,0,4,0,6,0],
+          [8,0,6,0,9,0,3,0,7],
+          [0,7,0,6,0,2,0,1,0],
+          [9,0,1,0,4,0,6,0,8],
+          [0,1,0,3,0,6,0,7,0],
+          [2,0,8,0,5,0,1,0,6],
+          [0,6,0,4,0,8,0,5,0]
+        ],
+        riddle: "🐾 <strong>Enigma Biológico:</strong> Com mais de 300 milhões de receptores olfativos e 30 mil anos de coevolução ao nosso lado... O refúgio mais fofo, leal e quentinho da casa esconde este mistério sob quatro patas.",
+        targetKey: "LEALDADE"
+      },
+      {
+        difficulty: "Fase 5 • O Grande Mestre",
+        solution: [
+          [8,2,7,1,5,4,3,9,6],
+          [9,6,5,3,2,7,1,4,8],
+          [3,4,1,6,8,9,7,5,2],
+          [5,9,3,4,6,8,2,7,1],
+          [4,7,2,5,1,3,6,8,9],
+          [6,1,8,9,7,2,4,3,5],
+          [7,8,6,2,3,5,9,1,4],
+          [1,5,4,7,9,6,8,2,3],
+          [2,3,9,8,4,1,5,6,7]
+        ],
+        initial: [
+          [0,2,0,0,0,4,3,0,0],
+          [9,0,0,0,2,0,0,0,8],
+          [0,0,0,6,0,9,0,5,0],
+          [0,0,0,0,0,0,0,0,1],
+          [0,7,2,5,0,3,6,8,0],
+          [6,0,0,0,0,0,0,0,0],
+          [0,8,0,2,0,5,0,0,0],
+          [1,0,0,0,9,0,0,0,3],
+          [0,0,9,8,0,0,0,6,0]
+        ],
+        riddle: "🪐 <strong>O Enigma da Gravidade:</strong> Isaac Newton formulou a atração universal em 1687, mas esta pista desafia a queda livre... Olhe para o coração da sala de jantar, mas não sobre a superfície: incline a cabeça e procure onde a gravidade é segurada por baixo do tampo.",
+        targetKey: "GRAVIDADE"
+      }
+    ];
+
+    /* ==========================================
+       ESTADO DO JOGO
+       ========================================== */
+    let currentLevel = 0;
+    let currentBoard = [];
+    let selectedCell = null;
+    let cheatTapCount = 0;
+    let giftTapCount = 0;
+
+    // Inicialização ao carregar
+    window.addEventListener('DOMContentLoaded', () => {
+      initAudio();
+      loadSavedPhoto();
+      // Atalho de Teclado 'E' para Eloiza
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'e' || e.key === 'E') {
+          solveCurrentSudokuByCheat();
+        }
+      });
+    });
+
+    /* ==========================================
+       SÍNTESE DE ÁUDIO WEB
+       ========================================== */
+    let audioCtx = null;
+    function initAudio() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      } catch(e) {}
+    }
+
+    function playNote(freq, time, duration, type='sine') {
+      if (!audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + time);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime + time);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + time + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + time);
+        osc.stop(audioCtx.currentTime + time + duration);
+      } catch(e) {}
+    }
+
+    function playMagicFanfare() {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      playNote(523.25, 0.0, 0.3); // C5
+      playNote(659.25, 0.12, 0.3); // E5
+      playNote(783.99, 0.24, 0.3); // G5
+      playNote(1046.50, 0.36, 0.6); // C6
+    }
+
+    /* ==========================================
+       TRANSIÇÕES DE TELA
+       ========================================== */
+    function openChest() {
+      const chestWrapper = document.getElementById('chest');
+      const flash = document.getElementById('flash');
+      chestWrapper.classList.add('open');
+      playMagicFanfare();
+
+      // Disparo do feixe de luz
+      setTimeout(() => {
+        flash.style.opacity = '1';
+      }, 400);
+
+      setTimeout(() => {
+        document.getElementById('screen-chest').style.display = 'none';
+        document.getElementById('screen-intro').style.display = 'flex';
+        flash.style.opacity = '0';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 900);
+    }
+
+    function startGame() {
+      document.getElementById('screen-intro').style.display = 'none';
+      document.getElementById('screen-game').style.display = 'flex';
+      loadLevel(0);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ==========================================
+       MECÂNICA DO SUDOKU
+       ========================================== */
+    function loadLevel(lvlIndex) {
+      currentLevel = lvlIndex;
+      const lvlData = LEVELS[lvlIndex];
+      document.getElementById('level-indicator').innerText = `Nível ${lvlIndex + 1} de 5`;
+      document.getElementById('level-difficulty').innerText = lvlData.difficulty;
+
+      // Clona matriz inicial
+      currentBoard = lvlData.initial.map(row => [...row]);
+      renderBoard();
+    }
+
+    function renderBoard() {
+      const grid = document.getElementById('sudoku-grid');
+      grid.innerHTML = '';
+      selectedCell = null;
+
+      const lvlData = LEVELS[currentLevel];
+
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          const val = currentBoard[r][c];
+          const isFixed = lvlData.initial[r][c] !== 0;
+
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (isFixed) cell.classList.add('fixed');
+          if (!isFixed && val !== 0) cell.classList.add('user');
+
+          cell.innerText = val !== 0 ? val : '';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+
+          cell.onclick = () => selectCell(r, c);
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function selectCell(r, c) {
+      const lvlData = LEVELS[currentLevel];
+      if (lvlData.initial[r][c] !== 0) return; // Células fixas não editam
+
+      selectedCell = { r, c };
+      const allCells = document.querySelectorAll('.cell');
+      allCells.forEach(cell => {
+        cell.classList.remove('selected', 'highlight');
+        const cr = parseInt(cell.dataset.row);
+        const cc = parseInt(cell.dataset.col);
+        if (cr === r && cc === c) {
+          cell.classList.add('selected');
+        } else if (cr === r || cc === c) {
+          cell.classList.add('highlight');
+        }
+      });
+    }
+
+    function pressKey(num) {
+      if (!selectedCell) return;
+      const { r, c } = selectedCell;
+      currentBoard[r][c] = num;
+
+      playNote(300 + num * 40, 0, 0.08);
+      renderBoard();
+      selectCell(r, c);
+      checkBoardAuto();
+    }
+
+    function clearUserBoard() {
+      const lvlData = LEVELS[currentLevel];
+      currentBoard = lvlData.initial.map(row => [...row]);
+      renderBoard();
+    }
+
+    function giveHint() {
+      const lvlData = LEVELS[currentLevel];
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (currentBoard[r][c] === 0) {
+            currentBoard[r][c] = lvlData.solution[r][c];
+            renderBoard();
+            selectCell(r, c);
+            playNote(600, 0, 0.15);
+            checkBoardAuto();
+            return;
+          }
+        }
+      }
+    }
+
+    function checkBoardAuto() {
+      const lvlData = LEVELS[currentLevel];
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (currentBoard[r][c] !== lvlData.solution[r][c]) {
+            return false;
+          }
+        }
+      }
+      // Se chegou aqui, Sudoku completo e correto!
+      onSudokuCompleted();
+      return true;
+    }
+
+    function onSudokuCompleted() {
+      playMagicFanfare();
+      triggerConfetti(30);
+      const lvlData = LEVELS[currentLevel];
+
+      document.getElementById('modal-title').innerText = `Nível ${currentLevel + 1} Decifrado!`;
+      document.getElementById('modal-riddle-text').innerHTML = lvlData.riddle;
+      document.getElementById('input-password').value = '';
+      document.getElementById('modal-riddle').style.display = 'flex';
+    }
+
+    /* ==========================================
+       SUBMISSÃO DE SENHA & AVANÇO
+       ========================================== */
+    function submitPassword() {
+      const input = document.getElementById('input-password');
+      const val = input.value.trim().toUpperCase();
+      const lvlData = LEVELS[currentLevel];
+
+      if (val === lvlData.targetKey || val === "ELOIZA") {
+        document.getElementById('modal-riddle').style.display = 'none';
+        playMagicFanfare();
+
+        if (currentLevel < 4) {
+          loadLevel(currentLevel + 1);
+        } else {
+          // Chegou ao Nível 5 concluído -> Gran Finale
+          document.getElementById('screen-game').style.display = 'none';
+          document.getElementById('screen-finale').style.display = 'flex';
+          triggerConfetti(120);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } else {
+        input.style.borderColor = '#F87171';
+        input.classList.add('error');
+        setTimeout(() => {
+          input.classList.remove('error');
+          input.style.borderColor = 'var(--primary-light)';
+        }, 600);
+      }
+    }
+
+    /* ==========================================
+       MODOS SECRETOS DA ELOIZA (CHEAT CODES)
+       ========================================== */
+    function solveCurrentSudokuByCheat() {
+      const lvlData = LEVELS[currentLevel];
+      currentBoard = lvlData.solution.map(row => [...row]);
+      renderBoard();
+      onSudokuCompleted();
+    }
+
+    function handleSecretTap() {
+      cheatTapCount++;
+      if (cheatTapCount >= 3) {
+        cheatTapCount = 0;
+        solveCurrentSudokuByCheat();
+      }
+      setTimeout(() => { cheatTapCount = 0; }, 1200);
+    }
+
+    function handleGiftTap() {
+      giftTapCount++;
+      if (giftTapCount >= 3) {
+        giftTapCount = 0;
+        document.getElementById('input-password').value = LEVELS[currentLevel].targetKey;
+        submitPassword();
+      }
+      setTimeout(() => { giftTapCount = 0; }, 1200);
+    }
+
+    /* ==========================================
+       CARREGAR FOTO PERSONALIZADA
+       ========================================== */
+    function triggerPhotoUpload() {
+      document.getElementById('photo-input').click();
+    }
+
+    function loadPhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgUrl = e.target.result;
+          document.getElementById('polaroid-image').src = imgUrl;
+          try {
+            localStorage.setItem('camila_bday_photo', imgUrl);
+          } catch(err) {}
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function loadSavedPhoto() {
+      try {
+        const saved = localStorage.getItem('camila_bday_photo');
+        if (saved) {
+          document.getElementById('polaroid-image').src = saved;
+        }
+      } catch(e) {}
+    }
+
+    /* ==========================================
+       VOUCHER & CONPETES
+       ========================================== */
+    function copyVoucher() {
+      const code = document.getElementById('voucher-code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Código do Gift Card copiado com sucesso! 💜");
+      });
+    }
+
+    function triggerConfetti(count = 60) {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#A855F7', '#C084FC', '#FACC15', '#F472B6', '#FFFFFF'];
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * -canvas.height,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: Math.random() * 4 - 2,
+          vy: Math.random() * 5 + 3,
+          rot: Math.random() * 360,
+          vrot: Math.random() * 6 - 3
+        });
+      }
+
+      let frames = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vrot;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        frames++;
+        if (frames < 200) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+  </script>
+</body>
+</html>
