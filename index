@@ -10,8 +10,8 @@
   <style>
     :root {
       --bg-deep: #07020E;
-      --bg-card: rgba(23, 8, 43, 0.75);
-      --bg-card-border: rgba(192, 132, 252, 0.25);
+      --bg-card: rgba(23, 8, 43, 0.8);
+      --bg-card-border: rgba(192, 132, 252, 0.28);
       --primary: #A855F7;
       --primary-light: #C084FC;
       --primary-glow: rgba(168, 85, 247, 0.4);
@@ -21,7 +21,7 @@
       --text-muted: #C4B5FD;
       --cell-bg: rgba(255, 255, 255, 0.05);
       --cell-fixed: #FFFFFF;
-      --cell-user: #E9D5FF;
+      --cell-user: #F0ABFC;
       --cell-border: rgba(192, 132, 252, 0.2);
       --cell-thick: #A855F7;
     }
@@ -231,7 +231,7 @@
       left: 35%;
       width: 80px;
       height: 24px;
-      background: rgba(192, 132, 252, 0.65);
+      background: rgba(192, 132, 252, 0.7);
       backdrop-filter: blur(4px);
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       transform: rotate(3deg);
@@ -319,7 +319,7 @@
       transform: scale(0.97);
     }
 
-    /* TELA 3: SUDOKU DO ANIVERSÁRIO */
+    /* TELA 3: SUDOKU */
     #screen-game {
       display: none;
       flex-direction: column;
@@ -398,7 +398,6 @@
       transition: background 0.15s ease;
     }
 
-    /* Linhas divisórias 3x3 mais grossas */
     .cell:nth-child(3n) {
       border-right: 2px solid var(--cell-thick);
     }
@@ -420,7 +419,7 @@
     }
 
     .cell.user {
-      color: #F0ABFC;
+      color: var(--cell-user);
     }
 
     .cell.selected {
@@ -502,7 +501,7 @@
       gap: 6px;
     }
 
-    /* MODAL DE CHARADA & DESBLOQUEIO */
+    /* MODAL DE CHARADA */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -615,102 +614,35 @@
       border: 1px solid var(--gold);
       backdrop-filter: blur(16px);
       border-radius: 24px;
-      padding: 24px 20px;
+      padding: 26px 22px;
       width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 30px var(--gold-glow);
       margin-bottom: 24px;
     }
 
-    /* VIP VOUCHER CARD */
-    .voucher-card {
-      background: linear-gradient(135deg, #1C0A33 0%, #2A0845 50%, #4C1D95 100%);
-      border: 2px solid var(--gold);
-      border-radius: 20px;
-      padding: 20px;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 20px rgba(250, 204, 21, 0.2);
-      margin-bottom: 24px;
+    /* CAIXA DE DESTAQUE DO ANEL */
+    .ring-box {
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.12) 0%, rgba(168, 85, 247, 0.15) 100%);
+      border: 1px solid var(--gold);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 18px 0;
+      text-align: center;
+      box-shadow: inset 0 0 20px rgba(250, 204, 21, 0.15);
     }
 
-    .voucher-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, rgba(250,204,21,0.2) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .voucher-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .voucher-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--gold);
-      letter-spacing: 1px;
-    }
-
-    .voucher-chip {
-      width: 36px;
-      height: 26px;
-      background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
-      border-radius: 6px;
-      box-shadow: inset 0 1px 2px rgba(255,255,255,0.4);
-    }
-
-    .voucher-value {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: #FFFFFF;
+    .ring-box-icon {
+      font-size: 2.2rem;
       margin-bottom: 6px;
-      text-shadow: 0 0 20px rgba(255,255,255,0.4);
+      display: inline-block;
+      animation: bounce 2.5s infinite ease-in-out;
     }
 
-    .voucher-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      line-height: 1.4;
-    }
-
-    .voucher-code-box {
-      background: rgba(0,0,0,0.4);
-      border: 1px dashed rgba(250, 204, 21, 0.5);
-      border-radius: 10px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .voucher-code {
-      font-family: 'JetBrains Mono', monospace;
+    .ring-box-text {
       font-size: 0.95rem;
-      color: var(--gold);
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    .btn-copy {
-      background: var(--gold);
-      color: #331A47;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
+      color: #FEF08A;
+      line-height: 1.6;
+      font-style: italic;
     }
 
     /* Canvas Confetes */
@@ -768,7 +700,7 @@
             </linearGradient>
             <linearGradient id="chestGold" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#FDE047"/>
-              <stop offset="100%" stop-color="#D97706"/>
+              <stop offset="50%" stop-color="#D97706"/>
             </linearGradient>
           </defs>
           <!-- Base do Baú -->
@@ -796,22 +728,22 @@
     <section id="screen-intro">
       <div class="letter-card">
         
-        <!-- Polaroid Personalizável -->
+        <!-- Polaroid com camilaelo.jpeg -->
         <div class="polaroid-frame" onclick="triggerPhotoUpload()">
           <div class="washi-tape"></div>
-          <img id="polaroid-image" class="polaroid-img" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80" alt="Nós Duas">
+          <img id="polaroid-image" class="polaroid-img" src="camilaelo.jpeg" onerror="this.src='https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80'" alt="Eloiza e Camila">
           <div class="polaroid-caption">Eloiza & Camila • Almas Gêmeas 💜</div>
           <center>
-            <span class="change-photo-btn">📷 Carregar nossa foto</span>
+            <span class="change-photo-btn">📷 Carregar / Ajustar foto</span>
           </center>
           <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="loadPhoto(event)">
         </div>
 
         <div class="letter-body">
           <p><strong>Minha irmã de alma,</strong></p>
-          <p>Hoje é o seu dia, e você sabe que nada entre nós é comum ou sem intensidade. A gente convive tanto que completa a frase uma da outra, tem os mesmos pensamentos ao mesmo tempo e até as nossas briguinhas duram exatos cinco segundos antes da gente cair na risada de novo.</p>
-          <p>Morar junto, estudar junto, dividir a rotina, o cansaço e os sonhos. Eu amo que a gente não precisa dizer uma palavra: basta eu estar lendo e você com seu fone de ouvido deitada no meu quarto para a casa parecer completa.</p>
-          <p>Como você é movida por desafios, mistérios e lógica, os seus presentes não estão fáceis. Eles estão trancados sob <strong>5 enigmas de Sudoku</strong> espalhados pelo apartamento. Cada quebra-cabeça decifrado revelará uma charada que aponta para um esconderijo físico.</p>
+          <p>Hoje é o seu dia, e você sabe que nada entre nós é comum ou sem intensidade. A gente convive tanto que completa as frases uma da outra, tem os mesmos pensamentos ao mesmo tempo e até as nossas briguinhas duram exatos cinco segundos antes da gente voltar a se falar como se nada tivesse acontecido.</p>
+          <p>Morar junto, estudar junto, trabalhar junto e dividir cada detalhe da vida. Eu amo o fato de que a gente não precisa dizer uma única palavra para se fazer companhia: basta eu estar lendo e você com seu fone de ouvido deitada no meu quarto para o mundo parecer em perfeita harmonia.</p>
+          <p>Como você é movida por desafios, curiosidade e pura lógica, os seus presentes não estão fáceis. Eles estão trancados sob <strong>5 enigmas de Sudoku</strong> espalhados pela nossa casa. Cada tabuleiro resolvido revelará uma charada apontando para um esconderijo secreto.</p>
         </div>
 
         <div class="rules-box">
@@ -828,7 +760,7 @@
       </div>
     </section>
 
-    <!-- TELA 3: SUDOKU DO ANIVERSÁRIO -->
+    <!-- TELA 3: SUDOKU -->
     <section id="screen-game">
       <div class="game-header">
         <div class="level-badge" id="level-badge-btn" onclick="handleSecretTap()">
@@ -871,30 +803,23 @@
       <div class="finale-badge">Missão Cumprida</div>
       <h1 class="finale-title">Feliz Aniversário!</h1>
 
-      <!-- VIP VOUCHER CARD -->
-      <div class="voucher-card">
-        <div class="voucher-top">
-          <div class="voucher-logo">GIFT CARD VIP • CAMILA</div>
-          <div class="voucher-chip"></div>
-        </div>
-        <div class="voucher-value">R$ 100,00</div>
-        <div class="voucher-desc">
-          Válido para encher o carrinho na <strong>SHEIN</strong> (ou onde o seu coração de arquiteta e musa quiser). O mimo oficial da sua irmãzinha!
-        </div>
-        <div class="voucher-code-box">
-          <span class="voucher-code" id="voucher-code">CAMILA-100-VIP-BDAY</span>
-          <button class="btn-copy" onclick="copyVoucher()">Copiar</button>
-        </div>
-      </div>
-
       <div class="finale-card">
         <div class="letter-body">
           <p><strong>Minha eterna companheira de vida,</strong></p>
-          <p>Você encontrou cada pacote, desvendou cada pista e agora está com o tesouro final nas suas mãos (e sim, eu peguei a sua indireta do anel bem na hora 💍).</p>
-          <p>Obrigada por ser esse porto seguro, essa mulher brilhante que me apoia, que me ouve falar sem parar e que aceita ficar em silêncio no mesmo quarto só para uma sentir a presença da outra.</p>
-          <p>Que o seu novo ciclo seja tão grandioso, inteligente e doce quanto você. Eu te amo muito, para além de qualquer algoritmo ou equação!</p>
-          <p style="text-align: right; color: var(--gold); font-weight: 700; margin-top: 20px;">
-            Com todo o meu amor,<br>Eloiza 💜
+          <p>Você enfrentou cada número, desvendou cada charada científica e encontrou todos os cantinhos que preparei para você. Mas esse último pacote guarda algo que nenhuma lógica ou equação matemática consegue explicar: o tamanho da nossa conexão.</p>
+
+          <div class="ring-box">
+            <span class="ring-box-icon">💍</span>
+            <div class="ring-box-text">
+              "Este anel não é apenas uma joia: ele é o símbolo eterno da nossa amizade. Um laço de duas almas que se escolheram para caminhar juntas neste mundo."
+            </div>
+          </div>
+
+          <p>Eu queria que você tivesse em mãos algo que pudesse carregar para onde for, para que toda vez que você olhar para a sua mão, se lembre de que nunca estará sozinha. É o símbolo de cada noite em que dormimos no quarto uma da outra, das conversas até de madrugada, dos planos divididos e da paz inestimável de saber que eu sempre terei você e você sempre terá a mim.</p>
+          <p>Nós somos irmãs de vida, cúmplices em cada detalhe da nossa rotina. Obrigada por ser o meu porto seguro diário, por me inspirar com a sua inteligência e por iluminar tudo ao seu redor com esse seu jeito único.</p>
+          <p>Que o seu novo ciclo seja radiante, cheio de conquistas, cafés quentes e momentos inesquecíveis. Eu te amo muito, para além de qualquer infinito!</p>
+          <p style="text-align: right; color: var(--gold); font-weight: 700; margin-top: 24px; font-size: 1.05rem;">
+            Com todo o amor do mundo,<br>Sua irmã de alma, Eloiza 💜
           </p>
         </div>
       </div>
@@ -928,7 +853,6 @@
     const LEVELS = [
       {
         difficulty: "Fase 1 • Aquecimento Rápido",
-        // Solução Completa Nível 1
         solution: [
           [5,3,4,6,7,8,9,1,2],
           [6,7,2,1,9,5,3,4,8],
@@ -940,7 +864,6 @@
           [2,8,7,4,1,9,6,3,5],
           [3,4,5,2,8,6,1,7,9]
         ],
-        // Tabuleiro Inicial (bastante preenchido)
         initial: [
           [5,3,0,0,7,0,0,0,0],
           [6,0,0,1,9,5,0,0,0],
@@ -1074,11 +997,10 @@
     let cheatTapCount = 0;
     let giftTapCount = 0;
 
-    // Inicialização ao carregar
     window.addEventListener('DOMContentLoaded', () => {
       initAudio();
       loadSavedPhoto();
-      // Atalho de Teclado 'E' para Eloiza
+      // Tecla 'E' para Cheat da Eloiza
       window.addEventListener('keydown', (e) => {
         if (e.key === 'e' || e.key === 'E') {
           solveCurrentSudokuByCheat();
@@ -1115,10 +1037,10 @@
 
     function playMagicFanfare() {
       if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      playNote(523.25, 0.0, 0.3); // C5
-      playNote(659.25, 0.12, 0.3); // E5
-      playNote(783.99, 0.24, 0.3); // G5
-      playNote(1046.50, 0.36, 0.6); // C6
+      playNote(523.25, 0.0, 0.3);
+      playNote(659.25, 0.12, 0.3);
+      playNote(783.99, 0.24, 0.3);
+      playNote(1046.50, 0.36, 0.6);
     }
 
     /* ==========================================
@@ -1130,7 +1052,6 @@
       chestWrapper.classList.add('open');
       playMagicFanfare();
 
-      // Disparo do feixe de luz
       setTimeout(() => {
         flash.style.opacity = '1';
       }, 400);
@@ -1159,7 +1080,6 @@
       document.getElementById('level-indicator').innerText = `Nível ${lvlIndex + 1} de 5`;
       document.getElementById('level-difficulty').innerText = lvlData.difficulty;
 
-      // Clona matriz inicial
       currentBoard = lvlData.initial.map(row => [...row]);
       renderBoard();
     }
@@ -1193,7 +1113,7 @@
 
     function selectCell(r, c) {
       const lvlData = LEVELS[currentLevel];
-      if (lvlData.initial[r][c] !== 0) return; // Células fixas não editam
+      if (lvlData.initial[r][c] !== 0) return;
 
       selectedCell = { r, c };
       const allCells = document.querySelectorAll('.cell');
@@ -1251,7 +1171,6 @@
           }
         }
       }
-      // Se chegou aqui, Sudoku completo e correto!
       onSudokuCompleted();
       return true;
     }
@@ -1282,7 +1201,6 @@
         if (currentLevel < 4) {
           loadLevel(currentLevel + 1);
         } else {
-          // Chegou ao Nível 5 concluído -> Gran Finale
           document.getElementById('screen-game').style.display = 'none';
           document.getElementById('screen-finale').style.display = 'flex';
           triggerConfetti(120);
@@ -1299,7 +1217,7 @@
     }
 
     /* ==========================================
-       MODOS SECRETOS DA ELOIZA (CHEAT CODES)
+       CHEAT CODES DA ELOIZA
        ========================================== */
     function solveCurrentSudokuByCheat() {
       const lvlData = LEVELS[currentLevel];
@@ -1328,7 +1246,7 @@
     }
 
     /* ==========================================
-       CARREGAR FOTO PERSONALIZADA
+       CARREGAR FOTO
        ========================================== */
     function triggerPhotoUpload() {
       document.getElementById('photo-input').click();
@@ -1359,15 +1277,8 @@
     }
 
     /* ==========================================
-       VOUCHER & CONPETES
+       CONFETES
        ========================================== */
-    function copyVoucher() {
-      const code = document.getElementById('voucher-code').innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        alert("Código do Gift Card copiado com sucesso! 💜");
-      });
-    }
-
     function triggerConfetti(count = 60) {
       const canvas = document.getElementById('confetti-canvas');
       const ctx = canvas.getContext('2d');
